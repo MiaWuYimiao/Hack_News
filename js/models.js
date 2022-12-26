@@ -90,6 +90,33 @@ class StoryList {
     const story = new Story(response.data.story);
     return story;
   }
+
+
+  async deleteStory(user, storyId){
+    const token = user.loginToken;
+    const response = await axios({
+      url: `${BASE_URL}/stories/${storyId}`,
+      method: "DELETE",
+      params: { token },
+    });
+    const deletedStory = new Story(response.data.story);
+    user.ownStories = user.ownStories.filter( story => {
+      if(story.storyId!==deletedStory.storyId){
+        return story;
+      }
+    });
+    user.favorites = user.favorites.filter( story => {
+      if(story.storyId!==deletedStory.storyId){
+        return story;
+      }
+    });
+    this.stories = this.stories.filter( story => {
+      if(story.storyId!==deletedStory.storyId){
+        return story;
+      }
+    });
+    return response.data.message;
+  }
 }
 
 
@@ -121,6 +148,11 @@ class User {
 
     // store the login token on the user so it's easy to find for API calls.
     this.loginToken = token;
+  }
+
+  /** Check passed in story is user's favorite */
+  isFavorite(story){
+    return this.favorites.find(s => s.storyId===story.storyId );
   }
 
   /** Register new user in API, make User instance & return it.
@@ -208,11 +240,13 @@ class User {
     }
   }
 
-  static async addFavoriteStory(token, username, storyId){
+  static async addFavoriteStory(storyId){
+    const token = currentUser.loginToken;
+    const username = currentUser.username;
     try {
       const response = await axios({
         url: `${BASE_URL}/users/${username}/favorites/${storyId}`,
-        methd: "POST",
+        method: "POST",
         params: { token },
       });
 
@@ -234,11 +268,13 @@ class User {
     }
   }
 
-  static async removeFavoriteStory(token, username, storyId){
+  static async removeFavoriteStory(storyId){
+    const token = currentUser.loginToken;
+    const username = currentUser.username;
     try {
       const response = await axios({
         url: `${BASE_URL}/users/${username}/favorites/${storyId}`,
-        methd: "DELETE",
+        method: "DELETE",
         params: { token },
       });
 

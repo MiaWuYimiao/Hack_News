@@ -8,6 +8,7 @@ const $storiesLoadingMsg = $("#stories-loading-msg");
 const $allStoriesList = $("#all-stories-list");
 const $favStoriesList = $("#fav-stories-list");
 const $myStoriesList = $("#my-stories-list");
+const $storiesList= $(".stories-list");
 
 const $loginForm = $("#login-form");
 const $signupForm = $("#signup-form");
@@ -21,6 +22,8 @@ const $submitForm = $("#submit-form");
 const $navSubmit = $("#nav-submit");
 const $navFavorites = $("#nav-favorites");
 const $navMyStories = $("#nav-myStories");
+
+const $userProfile= $("#user-profile");
 
 
 /** To make it easier for individual components to show just themselves, this
@@ -36,6 +39,7 @@ function hidePageComponents() {
     $loginForm,
     $signupForm,
     $submitForm,
+    $userProfile,
   ];
   components.forEach(c => c.hide());
 }

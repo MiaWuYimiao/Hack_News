@@ -70,14 +70,19 @@ $navLogOut.on("click", logout);
  *  notice: both all list page and my storied page can add/remove fav
  */
 
-function addOrRemoveFavoriteStory(evt) {
+async function addOrRemoveFavoriteStory(evt) {
   console.debug("addOrRemoveFavoriteStory", evt);
-  
-
+  const storyId = evt.target.closest('li').id;
+  if(evt.target.classList.contains('fas')){//if the story is already fav then remove it from fav
+    currentUser = await User.removeFavoriteStory(storyId);
+    $(evt.target).toggleClass('fas far');
+  }else{
+    currentUser = await User.addFavoriteStory(storyId);
+    $(evt.target).toggleClass('fas far');
+  }
 }
 
-$allStoriesList.on("click", addFavoriteStory);
-$allStoriesList.on("click", addFavoriteStory);
+$storiesList.on("click", ".fa-star", addOrRemoveFavoriteStory);
 
 /******************************************************************************
  * Storing/recalling previously-logged-in-user with localStorage
@@ -125,7 +130,9 @@ function saveUserCredentialsInLocalStorage() {
 function updateUIOnUserLogin() {
   console.debug("updateUIOnUserLogin");
 
+  hidePageComponents();
   $allStoriesList.show();
 
   updateNavOnLogin();
+  putStoriesOnPage();
 }

@@ -20,7 +20,8 @@ function navSubmitClick(evt) {
   console.debug("navSubmitClick", evt);
   hidePageComponents();
   $submitForm.show();
-  $allStoriesList.show();
+  putStoriesOnPage();
+  //$allStoriesList.show();
 }
 
 $navSubmit.on("click", navSubmitClick);
@@ -30,20 +31,34 @@ $navSubmit.on("click", navSubmitClick);
 function navFavoriteClick(evt) {
   console.debug("navFavoriteClick", evt);
   hidePageComponents();
-  $favStoriesList.show();
+  putFavStoriesOnPage();
 }
 
 $navFavorites.on("click", navFavoriteClick);
 
-/** Show submit form on click on "my stories" */
+/** Show my story form on click on "my stories" */
 
 function navMyStoryClick(evt) {
   console.debug("navMyStoryClick", evt);
   hidePageComponents();
-  $myStoriesList.show();
+  putMyStoriesOnPage();
 }
 
 $navMyStories.on("click", navMyStoryClick);
+
+/** Show user profile on click on username */
+
+function navUserProfileClicked(evt) {
+  console.debug("navUserProfileClicked", evt);
+  hidePageComponents();
+
+  $("#profile-name").text(`${currentUser.name}`);
+  $("#profile-username").text(`${currentUser.username}`);
+  $("#profile-create-time").text(`${currentUser.createdAt}`);
+  $userProfile.show();
+}
+
+$navUserProfile.on("click", navUserProfileClicked);
 
 /** Show login/signup on click on "login" */
 

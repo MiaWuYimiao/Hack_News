@@ -22,10 +22,13 @@ async function getAndShowStoriesOnStart() {
 function generateStoryMarkup(story) {
   // console.debug("generateStoryMarkup", story);
 
+  let showStar = (currentUser!==undefined);
+
   const hostName = story.getHostName();
   return $(`
       <li id="${story.storyId}">
-        <i class="fa fa-star-o"></i>
+        ${getTrashHtml()}
+        ${showStar? getStarHtml(story):""}
         <a href="${story.url}" target="a_blank" class="story-link">
           ${story.title}
         </a>
@@ -52,6 +55,44 @@ function putStoriesOnPage() {
   $allStoriesList.show();
 }
 
+/** Generates HTML of stories in user.favorites, and puts on page. */
+
+function putFavStoriesOnPage() {
+  console.debug("putFavStoriesOnPage");
+  $favStoriesList.empty();
+
+  if(currentUser.favorites.length===0){
+    $favStoriesList.append("<h5>No favorites added!</h5>")
+  }else{
+    // loop through all of our stories and generate HTML for them
+    for (let story of currentUser.favorites) {
+      const $story = generateStoryMarkup(story);
+      $favStoriesList.append($story);
+    }
+  }
+  $favStoriesList.show();
+}
+
+/** Generates HTML of stories in user.ownStories, and puts on page. */
+
+function putMyStoriesOnPage() {
+  console.debug("putMyStoriesOnPage");
+
+  $myStoriesList.empty();
+
+  // loop through all of our stories and generate HTML for them
+  if(currentUser.ownStories.length===0){
+    $myStoriesList.append("<h5>No story added by user yet!</h5>")
+  }else{
+    for (let story of currentUser.ownStories) {
+      const $story = generateStoryMarkup(story);
+      $myStoriesList.append($story);
+    }
+    $(".fa-trash").show();
+  }
+  $myStoriesList.show();
+}
+
 
 /** Handle submit button in submit form. */
 
@@ -65,7 +106,7 @@ async function submitNewStory(evt) {
 
   // storyList.addStory post story to API and returns story instances
   const newStory = await storyList.addStory(currentUser, {title, author, url})
-
+  currentUser.ownStories.push(newStory);
 
   $submitForm.hide();
   $submitForm.trigger("reset");
@@ -75,3 +116,32 @@ async function submitNewStory(evt) {
 }
 
 $submitForm.on("submit", submitNewStory);
+
+/** Handle click trash can - delete user's story 
+ *  
+ *  
+ */
+
+ async function deleteStory(evt) {
+  console.debug("deleteStory", evt);
+  const storyId = evt.target.closest('li').id;
+  const response = await storyList.deleteStory(currentUser, storyId);
+  console.log(response);
+
+  putMyStoriesOnPage();
+}
+
+$storiesList.on("click", ".fa-trash", deleteStory);
+
+function getTrashHtml(){
+  const html = `<i class="hidden fa fa-trash" ></i>`;
+  return html;
+}
+
+/** Get star html for the story  */
+function getStarHtml(story) {
+  const isFav = currentUser.isFavorite(story);
+  const attr = isFav? "fas fa-star":"far fa-star";
+  const html = `<i class="${attr}" ></i>`;
+  return html;
+}
