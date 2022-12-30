@@ -105,14 +105,13 @@ async function submitNewStory(evt) {
   const url = $("#submit-url").val();
 
   // storyList.addStory post story to API and returns story instances
-  const newStory = await storyList.addStory(currentUser, {title, author, url})
+  const newStory = await storyList.addStory(currentUser, { title, author, url })
   currentUser.ownStories.push(newStory);
 
   $submitForm.hide();
   $submitForm.trigger("reset");
 
-  
-  getAndShowStoriesOnStart()
+  putStoriesOnPage();
 }
 
 $submitForm.on("submit", submitNewStory);

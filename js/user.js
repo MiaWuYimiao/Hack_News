@@ -42,6 +42,7 @@ async function signup(evt) {
   // User.signup retrieves user info from API and returns User instance
   // which we'll make the globally-available, logged-in user.
   currentUser = await User.signup(username, password, name);
+  if(currentUser===undefined) return;
 
   saveUserCredentialsInLocalStorage();
   updateUIOnUserLogin();
@@ -73,13 +74,14 @@ $navLogOut.on("click", logout);
 async function addOrRemoveFavoriteStory(evt) {
   console.debug("addOrRemoveFavoriteStory", evt);
   const storyId = evt.target.closest('li').id;
-  if(evt.target.classList.contains('fas')){//if the story is already fav then remove it from fav
-    currentUser = await User.removeFavoriteStory(storyId);
-    $(evt.target).toggleClass('fas far');
-  }else{
-    currentUser = await User.addFavoriteStory(storyId);
-    $(evt.target).toggleClass('fas far');
+  const story = storyList.stories.find(s => s.storyId === storyId);
+  if (evt.target.classList.contains('fas')) {//if the story is already fav then remove it from fav
+    await currentUser.removeFavoriteStory(story);
+  } else {
+    await currentUser.addFavoriteStory(story);
   }
+
+  $(evt.target).toggleClass('fas far');
 }
 
 $storiesList.on("click", ".fa-star", addOrRemoveFavoriteStory);
